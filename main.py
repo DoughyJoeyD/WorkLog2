@@ -27,7 +27,7 @@ def menu():
                     runner = False
                 if int(choice) == 3:
                     clearscreen()
-                    print('Okay, Goodbye!')
+                    print('Quiting... Goodbye!')
                     time.sleep(1)
                     sys.exit()
                     runner = False
@@ -126,12 +126,120 @@ def get_task():
 
 def search():
     clearscreen()
-    print("Choose a Search Method")
-    choices = ['A: By Name or Extra', 'B: By Date', 'C: By Time Taken', 'D: By Pattern ']
-    runner = true
-    while runner == True:
-        
+    choices = ['1: By Name or Extra', '2: By Date', '3: By Time Taken', '4: By Pattern ', '5: Back to Menu']
+    print('You selected Search!')
+    runner = True
 
+    while runner == True:
+        #asks the user to choose a method to search from or go back
+        try:
+            clearscreen()
+            for choice in choices:
+                print(choice)
+            choice = int(input('Choose a Search Parameter!: '))
+        #catches all the errors with the user entry
+        except ValueError:
+            print('Oops Please Enter a Number!')
+            time.sleep(1)
+        #directs the user response to a search method
+        if choice == 1:
+            by_name_or_extra()
+            runner = False
+        if choice == 2:
+            by_date()
+            runner = False
+        if choice == 3:
+            by_time()
+            runner = False
+        if choice == 4:
+            by_pattern()
+            runner= False
+        if choice == 5:
+            menu()
+            runner = False
+
+def by_name_or_extra():
+    clearscreen()
+    print('You selected -Search By Name Or Extra-')
+    param = input('Text to search by: ').upper()
+    csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+    clearscreen()
+    print('Matching - {}'.format(param))
+    number = 1
+    for row in csv_file:
+        if row[0] == param:
+            print('--Matched by Name--')
+            print('{}: {}'.format(number,row))
+            print('-'*19)
+            number += 1
+        if row[3] == param:
+            print("--Matched by Extra--")
+            print('{}: {}'.format(number,row))
+            print('-'*19)
+            number += 1
+    if number == 1:
+        runner = True
+        while runner == True:
+            clearscreen()
+            print("Sorry nothing matches '{}' in Name or by Extra".format(param))
+            print("Search by Name or Extra Again?")
+            again = input('1:Yes - 2:No - ')
+            try:
+                int(again)
+                if int(again) == 1:
+                    runner = False
+                    by_name_or_extra()
+                if int(again) == 2:
+                    runner = False
+                if int(again) >= 3:
+                    clearscreen()
+                    print('Hey Man, I asked for a 1 or 2 please!')
+                    time.sleep(2)
+            except ValueError:
+                clearscreen()
+                print('Thats not a number!')
+                time.sleep(1)
+    disregard = input('Press Enter To Continue')
+
+
+
+def by_time():
+    clearscreen()
+    print('You selected -Search By Time-')
+    csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+    runner = True
+    while runner == True:
+        param = input('How Many Minutes was the task: ')
+        number = 1
+        try:
+            clearscreen()
+            print('Searching For tasks {} min long...'.format(param))
+            print('\n')
+            for row in csv_file:
+                if int(row[2]) == int(param):
+                    print('{}: {}'.format(number,row))
+                    number += 1
+            if number == 1:
+                clearscreen()
+                print('Sorry Nothing Matches {} min long'.format(param))
+                time.sleep(2)
+                print('Heading Back to Search!')
+                time.sleep(2)
+                search()
+                break
+            print('\n')
+            disregard = input('Press Enter To Continue! ')
+            runner = False
+        except ValueError:
+            clearscreen()
+            print("Please Enter a Number")
+
+
+def by_date():
+    pass
+
+def by_pattern():
+    pass
 
 
 def again():
