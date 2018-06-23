@@ -1,6 +1,7 @@
 import time
 import sys
 import csv
+import re
 
 from task import Task, clearscreen
 
@@ -123,6 +124,7 @@ def get_task():
     with open('tasks.csv', 'a') as csvfile:
         writer1 = csv.writer(csvfile, delimiter=',')
         writer1.writerow([instance.name] + [instance.date.strftime('%m/%d/%Y')] + [instance.time] + [instance.extra])
+    again()
 
 def search():
     clearscreen()
@@ -202,7 +204,6 @@ def by_name_or_extra():
     disregard = input('Press Enter To Continue')
 
 
-
 def by_time():
     clearscreen()
     print('You selected -Search By Time-')
@@ -236,43 +237,93 @@ def by_time():
 
 
 def by_date():
-    pass
+    clearscreen()
+    choice = ''
+    runner = True
+    while runner == True:
+        list_of_dates = []
+        count = 1
+        csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+        print('You Selected - Search By Date -')
+        print('Please select a date')
+        for row in csv_file:
+            if row[1] not in list_of_dates:
+                list_of_dates.append(row[1])
+        for item in list_of_dates:
+            print('{}: {}'.format(count, item))
+            count += 1
+
+        choice = input('Choose a Number: ')
+        try:
+            int(choice)
+            runner = False
+        except ValueError:
+            clearscreen()
+            print("Numbers Only Please")
+    csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+    date_choice = list_of_dates[int(choice)-1]
+    clearscreen()
+    print('Searching for Tasks with date: "{}"...'.format(date_choice))
+    print('\n')
+    for row in csv_file:
+        if row[1] == date_choice:
+            print(row)
+    print('\n')
+    disregard = input('Press Enter To Continue')
 
 def by_pattern():
-    pass
+    clearscreen()
+    print('You selected -Pattern Match-')
+    print('\n')
+    choice = None
+    results = []
+    while choice is None:
+        choice = input('Pattern to Match: ').upper()
+        try:
+            choice = re.compile(choice)
+        except re.error:
+            print("That is not a valid regular Pattern. Please Try again.")
+            choice = None
+    counter = 0
+    csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+    for row in csv_file:
+        if (re.search(choice, row[0]) or re.search(choice, row[3])):
+            print(row)
+            counter += 1
 
+    if counter == 0:
+        print("Sorry Nothing Matches That Selection")
+        time.sleep(1)
+    disregard = input('Press Enter To Continue')
 
 def again():
-    clearscreen()
     """Asks the user if they want to preform another task, only bypassed when quit is called"""
     #asks for a user response
-    print("Would you like to prefrom another task? ")
-    response = input("Yes-1 - No-2 ")
-    #if they give a vaild response
-    try:
-        if int(response) < 3:
-            if int(response) == 1:
-                menu()
-            if int(response) == 2:
-                pass
-        if int(response) >= 3:
-            print("1 or 2... not another number")
+    runner = True
+    while runner == True:
+        clearscreen()
+        print("Would you like to prefrom another task? ")
+        response = input("Yes-1 - No-2 ")
+        #if they give a vaild response
+        try:
+            if int(response) < 3:
+                if int(response) == 1:
+                    menu()
+                if int(response) == 2:
+                    sys.exit
+                    runner = False
+            if int(response) >= 3:
+                print("1 or 2... not another number")
+                time.sleep(1)
+                again()
+        #if they give us trouble
+        except ValueError:
+            print("Ooops Select 1 or 2...")
             time.sleep(1)
             again()
-    #if they give us trouble
-    except ValueError:
-        print("Ooops Select 1 or 2...")
-        time.sleep(1)
-        again()
 
 def __init__():
     menu()
     again()
-    clearscreen()
-    print('Thanks for Using WorkLog2')
-    time.sleep(1)
-    print('Goodbye!')
-    time.sleep(1)
-    clearscreen()
 
 __init__()
