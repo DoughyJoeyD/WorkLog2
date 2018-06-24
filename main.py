@@ -127,7 +127,9 @@ def get_task():
     again()
 
 def search():
+    """ Allows the user to search the csv file task.csv to find entries via the differnt methods listed below"""
     clearscreen()
+
     choices = ['1: By Name or Extra', '2: By Date', '3: By Time Taken', '4: By Pattern ', '5: Back to Menu']
     print('You selected Search!')
     runner = True
@@ -161,6 +163,7 @@ def search():
             runner = False
 
 def by_name_or_extra():
+    """This function is searchs for entires in the tasks.csv file by name and by there notes or extra category"""
     clearscreen()
     print('You selected -Search By Name Or Extra-')
     param = input('Text to search by: ').upper()
@@ -168,17 +171,20 @@ def by_name_or_extra():
     clearscreen()
     print('Matching - {}'.format(param))
     number = 1
+    # searchs the csv file for all entries matching row[0] or the Name slot
     for row in csv_file:
         if row[0] == param:
             print('--Matched by Name--')
             print('{}: {}'.format(number,row))
             print('-'*19)
             number += 1
+    # does the same as above but for the extra/notes/row[3] slot
         if row[3] == param:
             print("--Matched by Extra--")
             print('{}: {}'.format(number,row))
             print('-'*19)
             number += 1
+    # if we dont find anything matches the users given parameters we run this
     if number == 1:
         runner = True
         while runner == True:
@@ -193,6 +199,7 @@ def by_name_or_extra():
                     by_name_or_extra()
                 if int(again) == 2:
                     runner = False
+                #makes sure the user isnt trying to break the script
                 if int(again) >= 3:
                     clearscreen()
                     print('Hey Man, I asked for a 1 or 2 please!')
@@ -201,10 +208,12 @@ def by_name_or_extra():
                 clearscreen()
                 print('Thats not a number!')
                 time.sleep(1)
+    # holds the program to let the user see what has been found
     disregard = input('Press Enter To Continue')
 
 
 def by_time():
+    """ Function to find entries by there time spent slot"""
     clearscreen()
     print('You selected -Search By Time-')
     csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
@@ -216,10 +225,12 @@ def by_time():
             clearscreen()
             print('Searching For tasks {} min long...'.format(param))
             print('\n')
+            #matches the users answer with row[2] or the Time spent slot of the csv
             for row in csv_file:
                 if int(row[2]) == int(param):
                     print('{}: {}'.format(number,row))
                     number += 1
+            # again if we dont find anything we run this
             if number == 1:
                 clearscreen()
                 print('Sorry Nothing Matches {} min long'.format(param))
@@ -231,12 +242,14 @@ def by_time():
             print('\n')
             disregard = input('Press Enter To Continue! ')
             runner = False
+        # to keep the scipt from breaking
         except ValueError:
             clearscreen()
             print("Please Enter a Number")
 
 
 def by_date():
+    """ Function to search the csv by the Date completed or row[1] of the entries """
     clearscreen()
     choice = ''
     runner = True
@@ -246,17 +259,20 @@ def by_date():
         csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
         print('You Selected - Search By Date -')
         print('Please select a date')
+        # displays all the non repeating dates in order they are found in the file
         for row in csv_file:
             if row[1] not in list_of_dates:
                 list_of_dates.append(row[1])
+        # prints them nicely
         for item in list_of_dates:
             print('{}: {}'.format(count, item))
             count += 1
-
+        # grabs the users choice and matches it against the csv file
         choice = input('Choose a Number: ')
         try:
             int(choice)
             runner = False
+        # makes sure the user doesnt break the script by not entering a number
         except ValueError:
             clearscreen()
             print("Numbers Only Please")
@@ -272,25 +288,31 @@ def by_date():
     disregard = input('Press Enter To Continue')
 
 def by_pattern():
+    """ Function to use regex to find entries via there patterns, searchs through row[0]
+    and row[3] or Name/Extra"""
+
     clearscreen()
     print('You selected -Pattern Match-')
     print('\n')
     choice = None
     results = []
+    # makes the user enter a proper pattern
     while choice is None:
         choice = input('Pattern to Match: ').upper()
         try:
             choice = re.compile(choice)
+        # catches the exceptions and makes the user try again
         except re.error:
             print("That is not a valid regular Pattern. Please Try again.")
             choice = None
     counter = 0
     csv_file = csv.reader(open('tasks.csv', 'r'), delimiter=',')
+    # matches the regex against the rows in the csv csvfile
     for row in csv_file:
         if (re.search(choice, row[0]) or re.search(choice, row[3])):
             print(row)
             counter += 1
-
+    # if we dont find anything this message displays
     if counter == 0:
         print("Sorry Nothing Matches That Selection")
         time.sleep(1)
@@ -323,6 +345,7 @@ def again():
             again()
 
 def __init__():
+    """ Keeps the script from running when imported""" 
     menu()
     again()
 
